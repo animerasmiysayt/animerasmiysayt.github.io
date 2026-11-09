@@ -1,12 +1,147 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Anime Rasmiy</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rasmiy Anime — O’zbek tilida anime</title>
+<meta name="description" content="O’zbek tilidagi anime katalogi: yangi epizodlar, janrlar bo’yicha qidiruv va VIP obuna. Tomosha Telegram bot orqali.">
+<style>
+:root{--bg:#15112b;--card:#201a3d;--line:#352d5e;--text:#f4effc;--mute:#b4abd0;--pink:#ff8fb1;--mint:#8fe3cf}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--text);font:17px/1.6 "Trebuchet MS","Segoe UI",system-ui,sans-serif}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:3px solid var(--mint);outline-offset:2px}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+header{border-bottom:1px solid var(--line)}
+header .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:64px;flex-wrap:wrap}
+.logo{font-weight:800;font-size:20px}
+.logo span{color:var(--pink)}
+nav{display:flex;gap:18px;color:var(--mute);font-size:15px}
+nav a:hover{color:var(--text)}
+.btn{display:inline-block;padding:12px 22px;border-radius:999px;background:var(--pink);color:#2a1030;font-weight:700;border:0;cursor:pointer;font-size:16px}
+.btn.ghost{background:none;color:var(--text);border:1px solid var(--line)}
+.hero{position:relative;overflow:hidden;padding:72px 0 56px}
+.hero::after{content:"アニメ";position:absolute;right:-10px;top:10px;font-size:min(34vw,300px);font-weight:900;line-height:1;color:var(--card);writing-mode:vertical-rl;z-index:0;pointer-events:none}
+.hero .wrap{position:relative;z-index:1}
+h1{font-size:clamp(38px,8vw,72px);line-height:1.05;letter-spacing:-1px;max-width:11em}
+.hero p{color:var(--mute);max-width:34em;margin:18px 0 26px}
+.search{display:flex;gap:10px;max-width:520px}
+.search input{flex:1;min-width:0;padding:13px 18px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--text);font-size:16px}
+section{padding:44px 0}
+h2{font-size:28px;margin-bottom:6px}
+.sub{color:var(--mute);margin-bottom:22px}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:26px}
+.chip{padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:none;color:var(--text);cursor:pointer;font-size:15px}
+.chip[aria-pressed="true"]{background:var(--mint);color:#0f2a25;border-color:var(--mint)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:18px}
+.card{background:var(--card);border-radius:14px;overflow:hidden;border:1px solid var(--line)}
+.poster{aspect-ratio:3/4;display:flex;align-items:flex-end;padding:14px;font-weight:800;font-size:20px;line-height:1.15}
+.card .meta{padding:12px 14px;color:var(--mute);font-size:14px}
+.vip{background:var(--card);border-radius:20px;padding:36px;border:1px solid var(--line)}
+.vip ul{list-style:none;padding:0;margin:18px 0 26px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;color:var(--mute)}
+.vip li strong{display:block;color:var(--text)}
+.empty{color:var(--mute);padding:20px 0}
+footer{border-top:1px solid var(--line);padding:28px 0;color:var(--mute);font-size:14px}
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+</style>
 </head>
 <body>
-  <h1>Anime Rasmiy</h1>
-  <p>Sayt ishlayapti!</p>
+<header>
+  <div class="wrap">
+    <a class="logo" href="#">Rasmiy <span>Anime</span></a>
+    <nav>
+      <a href="#katalog">Katalog</a>
+      <a href="#vip">VIP obuna</a>
+      <a href="https://t.me/AnimeRasmiiyBot">Telegram bot</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<div class="hero">
+  <div class="wrap">
+    <h1>Anime olami bir joyda</h1>
+    <p>O’zbek tilida yangi epizodlar va sevimli seriallar. Nomi yoki janri bo’yicha toping, tomoshani Telegram botda boshlang.</p>
+    <div class="search">
+      <input id="q" type="search" placeholder="Anime nomini yozing" aria-label="Anime qidirish">
+      <a class="btn" href="https://t.me/AnimeRasmiiyBot">Botni ochish</a>
+    </div>
+  </div>
+</div>
+
+<section id="katalog">
+  <div class="wrap">
+    <h2>Anime katalogi</h2>
+    <p class="sub">Janrni tanlang yoki yuqoridagi qidiruvdan foydalaning.</p>
+    <div class="chips" id="chips"></div>
+    <div class="grid" id="grid"></div>
+    <p class="empty" id="empty" hidden>Hech narsa topilmadi. Boshqa nom yoki janrni sinab ko’ring.</p>
+  </div>
+</section>
+
+<section id="vip">
+  <div class="wrap">
+    <div class="vip">
+      <h2>VIP obuna</h2>
+      <p class="sub">Eksklyuziv animelar faqat VIP obunachilar uchun ochiq.</p>
+      <ul>
+        <li><strong>Reklamasiz tomosha</strong>Uzluksiz ko’ring, hech narsa to’sqinlik qilmaydi.</li>
+        <li><strong>Full HD sifat</strong>1080p va tez yuklash.</li>
+        <li><strong>Erta kirish</strong>Yangi epizodlar boshqalardan oldin ochiladi.</li>
+      </ul>
+      <a class="btn" href="https://t.me/AnimeRasmiiyBot">VIP narxlarini botda ko’ring</a>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Rasmiy Anime</span>
+    <a href="https://t.me/AnimeRasmiiyBot">@AnimeRasmiiyBot</a>
+  </div>
+</footer>
+
+<script>
+// Anime qo’shish: shu ro’yxatga yangi qator yozing.
+// name — nomi, genres — janrlar, year — yil, hue — poster rangi (0–360)
+const ANIME = [
+  {name:"Naruto", genres:["Action","Sarguzasht"], year:2002, hue:25},
+  {name:"One Piece", genres:["Sarguzasht","Komediya"], year:1999, hue:200},
+  {name:"Hujum Titanlar", genres:["Action","Drama"], year:2013, hue:350},
+  {name:"Sening ismingni so’rayman", genres:["Romantika","Fantaziya"], year:2016, hue:280}
+];
+const GENRES=["Action","Fantaziya","Romantika","Ilmiy fantastika","Sirli","Komediya","G’ayritabiiy","Sport","Musiqa","Drama","Sarguzasht","Triller"];
+let genre="", query="";
+const grid=document.getElementById("grid"), empty=document.getElementById("empty"), chips=document.getElementById("chips");
+
+function renderChips(){
+  chips.innerHTML="";
+  ["Hammasi",...GENRES].forEach(g=>{
+    const b=document.createElement("button");
+    b.className="chip"; b.textContent=g;
+    const val=g==="Hammasi"?"":g;
+    b.setAttribute("aria-pressed", String(genre===val));
+    b.onclick=()=>{genre=val; renderChips(); renderGrid();};
+    chips.appendChild(b);
+  });
+}
+function renderGrid(){
+  const list=ANIME.filter(a=>(!genre||a.genres.includes(genre))&&a.name.toLowerCase().includes(query));
+  grid.innerHTML="";
+  list.forEach(a=>{
+    const c=document.createElement("article"); c.className="card";
+    const p=document.createElement("div"); p.className="poster";
+    p.style.background=`linear-gradient(160deg,hsl(${a.hue} 60% 38%),hsl(${(a.hue+40)%360} 55% 18%))`;
+    p.textContent=a.name;
+    const m=document.createElement("div"); m.className="meta";
+    m.textContent=a.genres.join(", ")+" · "+a.year;
+    c.append(p,m); grid.appendChild(c);
+  });
+  empty.hidden=list.length>0;
+}
+document.getElementById("q").addEventListener("input",e=>{query=e.target.value.trim().toLowerCase(); renderGrid();});
+renderChips(); renderGrid();
+</script>
 </body>
 </html>
